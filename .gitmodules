@@ -1,0 +1,3 @@
+[submodule "fortiosapi"]
+	path = fortiosapi
+	url = git@github.com:fortinet-solutions-cse/fortiosapi.git
