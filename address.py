@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#License upload using FORTIOSAPI from Github
+#firewall Address set up using FORTIOSAPI from Github
 
 import logging
 import sys
@@ -38,32 +38,14 @@ def main():
     fgt = FortiOSAPI()
 
     fgt.login(ip, 'fgtadmin', passwd, verify=False)
-    data = {
-        'name': "apiset",
-        "scan-mode": "quick",
-        'http': {"options": "scan avmonitor",},
-        "emulator": "enable",
-    }
-    fgt.set('antivirus', 'profile', vdom="root", data=data)
 
     data = {
-        'policyid': "66",
-        'name': "Testfortiosapi",
-        'action': "accept",
-        'srcintf': [{"name": "port1"}],
-        'dstintf': [{"name": "port2"}],
-        'srcaddr': [{"name": "all"}],
-        'dstaddr': [{"name": "all"}],
-        'schedule': "always",
-        'service': [{"name": "HTTPS"}],
-        "utm-status": "enable",
-        "profile-type": "single",
-        'av-profile': "apiset",
-        'profile-protocol-options': "default",
-        'ssl-ssh-profile': "certificate-inspection",
-        'logtraffic': "all",
+        'name': "APItest",
+        'subnet' : "10.20.0.0 255.255.255.0",
+        'type': "ipmask"
+        #        associated_interface: "port2"
     }
-    fgt.set('firewall', 'policy', vdom="root", data=data)
+    fgt.set('firewall', 'address', vdom="root", data=data)
     fgt.logout()
 if __name__ == '__main__':
   main()
