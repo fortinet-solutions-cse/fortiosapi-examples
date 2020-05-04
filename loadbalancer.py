@@ -45,6 +45,7 @@ def main():
 
     fgt = FortiOSAPI()
     fgt.login(ip, user, password=password, verify=False)
+# TODO make a set for the health check
 
     data = {
           "name": "APItestVIP",
@@ -65,15 +66,18 @@ def main():
     ret = fgt.set('firewall', 'vip', vdom="root", data=data)
     pprint(ret)
     ##to do a get https://104.47.161.74/api/v2/monitor/firewall/load-balance/select/?count=300 "count is mandatory
-
+    ret = fgt.get('firewall', 'vip', vdom="root")
+    pprint(ret)
     if ret['http_status'] == 200:
         pprint(fgt.monitor('firewall', 'load-balance',
-                                  mkey='select', vdom='root',parameters='count=20')['results'])
+                                  mkey='select', vdom='root',parameters='count=999')['results'])
         fgt.logout()
         exit(0)
     else:
         print("error: %s " % ret['status'])
         fgt.logout()
         exit(2)
+
+    ##TODO have the ingress policy set up
 if __name__ == '__main__':
   main()
