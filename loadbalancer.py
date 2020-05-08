@@ -68,6 +68,21 @@ def main():
     ##to do a get https://104.47.161.74/api/v2/monitor/firewall/load-balance/select/?count=300 "count is mandatory
     ret = fgt.get('firewall', 'vip', vdom="root")
     pprint(ret)
+    data = {
+        'policyid': 401,
+        'name': "Testfortiosapi",
+        'action': "accept",
+        'srcintf': [{"name": "port1"}],
+        'dstintf': [{"name": "port2"}],
+        'srcaddr': [{"name": "all"}],
+        'dstaddr': [{"name": "APItestVIP"}],
+        'schedule': "always",
+        'service': [{"name": "HTTP"}],
+        'logtraffic': "all",
+        'inspection-mode': "proxy"
+    }
+    ret2 = fgt.set('firewall', 'policy', vdom="root", data=data)
+    pprint(ret2)
     if ret['http_status'] == 200:
         pprint(fgt.monitor('firewall', 'load-balance',
                                   mkey='select', vdom='root',parameters='count=999')['results'])
