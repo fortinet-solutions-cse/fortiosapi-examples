@@ -5,7 +5,11 @@ import logging
 import sys
 
 from fortiosapi import FortiOSAPI
+from fortiosapi import (InvalidLicense, NotLogged)
 from pprint import pprint
+# Disable ssl cert verif error
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import json
 formatter = logging.Formatter(
     '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
@@ -14,6 +18,8 @@ hdlr = logging.FileHandler('testfortiosapi.log')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 logger.setLevel(logging.DEBUG)
+
+fgt = FortiOSAPI()
 
 def usage():
     print("Please use user:password@ip as a parameter")
@@ -43,9 +49,16 @@ def main():
 
     # Login to the FGT ip
 
-    fgt = FortiOSAPI()
+
     fgt.login(ip, user, password=password, verify=False)
-# TODO make a set for the health check
+
+
+    data = {
+        "name": "APItestVIP",
+        "type": "http",
+    }
+    ret = fgt.set('firewall', 'ldb-monitor', vdom="root", data=data)
+    pprint(ret)
 
     data = {
           "name": "APItestVIP",
@@ -53,12 +66,12 @@ def main():
           "ldb-method": "least-rtt",
           "extintf": "port1",
           "server-type":  "http",
-          "monitor": [ {"name": "http"}],
+          "monitor": [ {"name": "APItestVIP"}],
           "extport": "88",
           "realservers": [
-            { "id": 1, "ip": "198.51.100.42",
+            {  "ip": "198.51.100.42",
               "port": 80, "status": "active"},
-              {"id": 2, "ip": "10.40.0.25",
+              { "ip": "10.40.0.25",
                "port": 80, "status": "active"}
           ]
         }
@@ -93,6 +106,6 @@ def main():
         fgt.logout()
         exit(2)
 
-    ##TODO have the ingress policy set up
+
 if __name__ == '__main__':
   main()
